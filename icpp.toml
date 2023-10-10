@@ -1,11 +1,36 @@
 [build-wasm]
-canister          = "joltsample"
-did_path          = "HelloWorld/joltsample.did"
-cpp_paths         = ["HelloWorld.cpp", "./Jolt/*.cpp", "./Jolt/*/*.cpp"]  # Use wildcard pattern to include all .cpp files in src/
+canister = "joltsample"
+did_path = "src/joltsample.did"
+cpp_paths = [
+    "src/HelloWorld.cpp",
+    "./Jolt/*.cpp",
+    "./Jolt/*/*.cpp",
+    "./Jolt/*/*/*.cpp",
+    "./Jolt/*/*/*/*.cpp",
+]
 cpp_include_dirs = ["Jolt/"]
-cpp_compile_flags = ["-D __x86_64__", "-D JPH_PLATFORM_LINUX", "-D JPH_FLOATING_POINT_EXCEPTIONS_ENABLED", "-D JPH_USE_AVX2", "-D JPH_USE_AVX", "-D JPH_USE_SSE4_1", 
-"-D JPH_USE_SSE4_2", "-D JPH_USE_LZCNT", "-D JPH_USE_TZCNT", "-D JPH_USE_F16C", "-D JPH_USE_FMADD"]
-cpp_link_flags    = []
-c_paths           = []
-c_header_paths    = []
-c_compile_flags   = []
+cpp_compile_flags = [
+    "-D __x86_64__",
+    "-D JPH_PLATFORM_LINUX",
+    "-D JPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
+    "-D JPH_USE_AVX2",
+    "-D JPH_USE_AVX",
+    "-D JPH_USE_SSE4_1",
+    "-D JPH_USE_SSE4_2",
+    "-D JPH_USE_LZCNT",
+    "-D JPH_USE_TZCNT",
+    "-D JPH_USE_F16C",
+    "-D JPH_USE_FMADD",
+]
+cpp_link_flags = []
+c_paths = []
+c_header_paths = []
+c_compile_flags = []
+[build-native]
+cpp_paths = ["native/main.cpp"]
+cpp_include_dirs = []
+cpp_compile_flags = []
+cpp_link_flags = []
+c_paths = []
+c_include_dirs = []
+c_compile_flags = []
