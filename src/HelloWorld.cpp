@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "HelloWorld.h"
+#include "ic_api.h"
 
 // The Jolt headers don't include Jolt.h. Always include Jolt.h before including any other Jolt header.
 // You can use Jolt.h in your precompiled header to speed up compilation.
@@ -59,7 +60,7 @@ static void TraceImpl(const char *inFMT, ...)
 static bool AssertFailedImpl(const char *inExpression, const char *inMessage, const char *inFile, uint inLine)
 {
 	// Print to the TTY
-	msg.append(inFile + ":" + inLine + ": (" + inExpression + ") " + (inMessage != nullptr? inMessage : ""\n));
+	msg.append(inFile + ":" + inLine + ": (" + inExpression + ") " + (inMessage != nullptr ? inMessage : ""\n));
 
 	// Breakpoint
 	return true;
@@ -82,7 +83,7 @@ namespace Layers
 class ObjectLayerPairFilterImpl : public ObjectLayerPairFilter
 {
 public:
-	virtual bool					ShouldCollide(ObjectLayer inObject1, ObjectLayer inObject2) const override
+	virtual bool ShouldCollide(ObjectLayer inObject1, ObjectLayer inObject2) const override
 	{
 		switch (inObject1)
 		{
@@ -114,45 +115,49 @@ namespace BroadPhaseLayers
 class BPLayerInterfaceImpl final : public BroadPhaseLayerInterface
 {
 public:
-									BPLayerInterfaceImpl()
+	BPLayerInterfaceImpl()
 	{
 		// Create a mapping table from object to broad phase layer
 		mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
 		mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
 	}
 
-	virtual uint					GetNumBroadPhaseLayers() const override
+	virtual uint GetNumBroadPhaseLayers() const override
 	{
 		return BroadPhaseLayers::NUM_LAYERS;
 	}
 
-	virtual BroadPhaseLayer			GetBroadPhaseLayer(ObjectLayer inLayer) const override
+	virtual BroadPhaseLayer GetBroadPhaseLayer(ObjectLayer inLayer) const override
 	{
 		JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
 		return mObjectToBroadPhase[inLayer];
 	}
 
 #if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
-	virtual const char *			GetBroadPhaseLayerName(BroadPhaseLayer inLayer) const override
+	virtual const char *GetBroadPhaseLayerName(BroadPhaseLayer inLayer) const override
 	{
 		switch ((BroadPhaseLayer::Type)inLayer)
 		{
-		case (BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:	return "NON_MOVING";
-		case (BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:		return "MOVING";
-		default:													JPH_ASSERT(false); return "INVALID";
+		case (BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:
+			return "NON_MOVING";
+		case (BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:
+			return "MOVING";
+		default:
+			JPH_ASSERT(false);
+			return "INVALID";
 		}
 	}
 #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
 
 private:
-	BroadPhaseLayer					mObjectToBroadPhase[Layers::NUM_LAYERS];
+	BroadPhaseLayer mObjectToBroadPhase[Layers::NUM_LAYERS];
 };
 
 /// Class that determines if an object layer can collide with a broadphase layer
 class ObjectVsBroadPhaseLayerFilterImpl : public ObjectVsBroadPhaseLayerFilter
 {
 public:
-	virtual bool				ShouldCollide(ObjectLayer inLayer1, BroadPhaseLayer inLayer2) const override
+	virtual bool ShouldCollide(ObjectLayer inLayer1, BroadPhaseLayer inLayer2) const override
 	{
 		switch (inLayer1)
 		{
@@ -172,7 +177,7 @@ class MyContactListener : public ContactListener
 {
 public:
 	// See: ContactListener
-	virtual ValidateResult	OnContactValidate(const Body &inBody1, const Body &inBody2, RVec3Arg inBaseOffset, const CollideShapeResult &inCollisionResult) override
+	virtual ValidateResult OnContactValidate(const Body &inBody1, const Body &inBody2, RVec3Arg inBaseOffset, const CollideShapeResult &inCollisionResult) override
 	{
 		msg.append("Contact validate callback\n");
 
@@ -180,17 +185,17 @@ public:
 		return ValidateResult::AcceptAllContactsForThisBodyPair;
 	}
 
-	virtual void			OnContactAdded(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
+	virtual void OnContactAdded(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
 	{
 		msg.append("A contact was added\n");
 	}
 
-	virtual void			OnContactPersisted(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
+	virtual void OnContactPersisted(const Body &inBody1, const Body &inBody2, const ContactManifold &inManifold, ContactSettings &ioSettings) override
 	{
 		msg.append("A contact was persisted\n");
 	}
 
-	virtual void			OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
+	virtual void OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
 	{
 		msg.append("A contact was removed\n");
 	}
@@ -200,31 +205,31 @@ public:
 class MyBodyActivationListener : public BodyActivationListener
 {
 public:
-	virtual void		OnBodyActivated(const BodyID &inBodyID, uint64 inBodyUserData) override
+	virtual void OnBodyActivated(const BodyID &inBodyID, uint64 inBodyUserData) override
 	{
 		msg.append("A body got activated\n");
 	}
 
-	virtual void		OnBodyDeactivated(const BodyID &inBodyID, uint64 inBodyUserData) override
+	virtual void OnBodyDeactivated(const BodyID &inBodyID, uint64 inBodyUserData) override
 	{
 		msg.append("A body went to sleep\n");
 	}
 };
 
 // Program entry point
-int hello()
+void hello()
 {
-  IC_API ic_api(CanisterQuery{std::string(__func__)}, false);
+	IC_API ic_api(CanisterQuery{std::string(__func__)}, false);
 
-  // Get the principal of the caller, as cryptographically verified by the IC
-  CandidTypePrincipal caller = ic_api.get_caller();
+	// Get the principal of the caller, as cryptographically verified by the IC
+	CandidTypePrincipal caller = ic_api.get_caller();
 
-  // Get the name, passed as a Candid parameter to this method
-  uint64_t seed{0};
-  ic_api.from_wire(CandidTypeNat64{&seed});
+	// Get the name, passed as a Candid parameter to this method
+	// uint64_t seed{0};
+	// ic_api.from_wire(CandidTypeNat64{&seed});
 
-  msg = "";
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	msg = "";
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Register allocation hook
 	RegisterDefaultAllocator();
 
@@ -345,7 +350,10 @@ int hello()
 		// Output current position and velocity of the sphere
 		RVec3 position = body_interface.GetCenterOfMassPosition(sphere_id);
 		Vec3 velocity = body_interface.GetLinearVelocity(sphere_id);
-		msg.append("Step " + step + ": Position = (" + position.GetX() + ", " + position.GetY() + ", " + position.GetZ() + "), Velocity = (" + velocity.GetX() + ", " + velocity.GetY() + ", " + velocity.GetZ() + ")" + "\n");
+
+		std::string msg_step = "Step " + std::to_string(step) + ": Position = (" + std::to_string(position.GetX()) + ", " + std::to_string(position.GetY()) + ", " + std::to_string(position.GetZ()) + "), Velocity = (" + std::to_string(velocity.GetX()) + ", " + std::to_string(velocity.GetY()) + ", " + std::to_string(velocity.GetZ()) + ")" + "\n";
+		IC_API::debug_print(msg_step); // print it
+		msg.append(msg_step);		   // msg send back over wire
 
 		// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
 		const int cCollisionSteps = 1;
@@ -371,9 +379,9 @@ int hello()
 	delete Factory::sInstance;
 	Factory::sInstance = nullptr;
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Create a msg, to be passed back as Candid over the wire
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Create a msg, to be passed back as Candid over the wire
 
-  // Send the response back
-  ic_api.to_wire(CandidTypeText{msg});
+	// Send the response back
+	ic_api.to_wire(CandidTypeText{msg});
 }
