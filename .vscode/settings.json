@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "xstring": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "mutex": "cpp",
+        "shared_mutex": "cpp"
     }
 }

@@ -260,7 +260,7 @@ void hello()
 	const uint cMaxBodies = 1024;
 
 	// This determines how many mutexes to allocate to protect rigid bodies from concurrent access. Set it to 0 for the default settings.
-	const uint cNumBodyMutexes = 0;
+	const uint cNumBodyMutexes = 1;
 
 	// This is the max amount of body pairs that can be queued at any time (the broad phase will detect overlapping
 	// body pairs based on their bounding boxes and will insert them into a queue for the narrowphase). If you make this buffer
@@ -303,7 +303,7 @@ void hello()
 
 	// The main way to interact with the bodies in the physics system is through the body interface. There is a locking and a non-locking
 	// variant of this. We're going to use the locking version (even though we're not planning to access bodies from multiple threads)
-	BodyInterface &body_interface = physics_system.GetBodyInterface();
+	BodyInterface &body_interface = physics_system.GetBodyLockInterfaceNoLock();
 
 	// Next we can create a rigid body to serve as the floor, we make a large box
 	// Create the settings for the collision volume (the shape).
