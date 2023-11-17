@@ -303,7 +303,7 @@ void hello()
 
 	// The main way to interact with the bodies in the physics system is through the body interface. There is a locking and a non-locking
 	// variant of this. We're going to use the locking version (even though we're not planning to access bodies from multiple threads)
-	BodyInterface &body_interface = physics_system.GetBodyLockInterfaceNoLock();
+	BodyInterface  &body_interface = physics_system.GetBodyInterfaceNoLock();
 
 	// Next we can create a rigid body to serve as the floor, we make a large box
 	// Create the settings for the collision volume (the shape).

@@ -8,9 +8,9 @@
 #include <Jolt/Core/NonCopyable.h>
 
 JPH_SUPPRESS_WARNINGS_STD_BEGIN
-#include <mutex>
-#include <shared_mutex>
-#include <thread>
+#include <std/mutex.cpp>
+#include <std/shared_mutex.cpp>
+#include <std/thread.cpp>
 JPH_SUPPRESS_WARNINGS_STD_END
 
 JPH_NAMESPACE_BEGIN
@@ -23,7 +23,88 @@ using std::lock_guard;
 using std::shared_lock;
 using std::unique_lock;
 
-#ifdef JPH_PLATFORM_BLUE
+#ifdef JPH_PLATFORM_SINGLE_THREAD
+
+// On Platform Singlethread there is no mutex or multithreading
+class MutexBase : public NonCopyable
+{
+public:
+					MutexBase()
+	{
+		
+	}
+
+					~MutexBase()
+	{
+		
+	}
+
+	inline bool		try_lock()
+	{
+		return true;
+	}
+
+	inline void		lock()
+	{
+		
+	}
+
+	inline void		unlock()
+	{
+		
+	}
+
+private:
+};
+
+// On Platform Singlethread there is no mutex or multithreading
+class SharedMutexBase : public NonCopyable
+{
+public:
+					SharedMutexBase()
+	{
+		
+	}
+
+					~SharedMutexBase()
+	{
+		
+	}
+
+	inline bool		try_lock()
+	{
+		return true;
+	}
+
+	inline bool		try_lock_shared()
+	{
+		return true;
+	}
+
+	inline void		lock()
+	{
+		
+	}
+
+	inline void		unlock()
+	{
+		
+	}
+
+	inline void		lock_shared()
+	{
+		
+	}
+
+	inline void		unlock_shared()
+	{
+		
+	}
+
+private:
+};
+
+#elif JPH_PLATFORM_BLUE
 
 // On Platform Blue the mutex class is not very fast so we implement it using the official APIs
 class MutexBase : public NonCopyable
