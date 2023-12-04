@@ -8,7 +8,7 @@
 #include <Jolt/Core/Profiler.h>
 
 JPH_SUPPRESS_WARNINGS_STD_BEGIN
-#include <thread>
+//#include <thread>
 JPH_SUPPRESS_WARNINGS_STD_END
 
 JPH_NAMESPACE_BEGIN
@@ -48,14 +48,14 @@ void JobSystemWithBarrier::BarrierImpl::AddJob(const JobHandle &inJob)
 		while (write_index - mJobReadIndex >= cMaxJobs)
 		{
 			JPH_ASSERT(false, "Barrier full, stalling!");
-			std::this_thread::sleep_for(std::chrono::microseconds(100));
+			//std::this_thread::sleep_for(std::chrono::microseconds(100));
 		}
 		mJobs[write_index & (cMaxJobs - 1)] = job;
 	}
 
 	// Notify waiting thread that a new executable job is available
-	if (release_semaphore)
-		mSemaphore.Release();
+	// if (release_semaphore)
+	// 	mSemaphore.Release();
 }
 
 void JobSystemWithBarrier::BarrierImpl::AddJobs(const JobHandle *inHandles, uint inNumHandles)
@@ -84,22 +84,22 @@ void JobSystemWithBarrier::BarrierImpl::AddJobs(const JobHandle *inHandles, uint
 			while (write_index - mJobReadIndex >= cMaxJobs)
 			{
 				JPH_ASSERT(false, "Barrier full, stalling!");
-				std::this_thread::sleep_for(std::chrono::microseconds(100));
+				//std::this_thread::sleep_for(std::chrono::microseconds(100));
 			}
 			mJobs[write_index & (cMaxJobs - 1)] = job;
 		}
 	}
 
 	// Notify waiting thread that a new executable job is available
-	if (release_semaphore)
-		mSemaphore.Release();
+	// if (release_semaphore)
+	// 	mSemaphore.Release();
 }
 
 void JobSystemWithBarrier::BarrierImpl::OnJobFinished(Job *inJob)
 {
 	JPH_PROFILE_FUNCTION();
 
-	mSemaphore.Release();
+	//mSemaphore.Release();
 }
 
 void JobSystemWithBarrier::BarrierImpl::Wait()
@@ -147,9 +147,9 @@ void JobSystemWithBarrier::BarrierImpl::Wait()
 		}
 
 		// Wait for another thread to wake us when either there is more work to do or when all jobs have completed
-		int num_to_acquire = max(1, mSemaphore.GetValue()); // When there have been multiple releases, we acquire them all at the same time to avoid needlessly spinning on executing jobs
-		mSemaphore.Acquire(num_to_acquire);
-		mNumToAcquire -= num_to_acquire;
+		// int num_to_acquire = max(1, mSemaphore.GetValue()); // When there have been multiple releases, we acquire them all at the same time to avoid needlessly spinning on executing jobs
+		// mSemaphore.Acquire(num_to_acquire);
+		// mNumToAcquire -= num_to_acquire;
 	}
 
 	// All jobs should be done now, release them

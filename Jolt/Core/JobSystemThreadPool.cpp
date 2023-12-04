@@ -47,7 +47,7 @@ void JobSystemThreadPool::StartThreads(int inNumThreads)
 {
 	// Auto detect number of threads
 	if (inNumThreads < 0)
-		inNumThreads = thread::hardware_concurrency() - 1;
+		inNumThreads = 0;//thread::hardware_concurrency() - 1;
 
 	// If no threads are requested we're done
 	if (inNumThreads == 0)
@@ -62,10 +62,10 @@ void JobSystemThreadPool::StartThreads(int inNumThreads)
 		mHeads[i] = 0;
 
 	// Start running threads
-	JPH_ASSERT(mThreads.empty());
-	mThreads.reserve(inNumThreads);
-	for (int i = 0; i < inNumThreads; ++i)
-		mThreads.emplace_back([this, i] { ThreadMain(i); });
+	// JPH_ASSERT(mThreads.empty());
+	// mThreads.reserve(inNumThreads);
+	// for (int i = 0; i < inNumThreads; ++i)
+	// 	mThreads.emplace_back([this, i] { ThreadMain(i); });
 }
 
 JobSystemThreadPool::~JobSystemThreadPool()
@@ -76,38 +76,38 @@ JobSystemThreadPool::~JobSystemThreadPool()
 
 void JobSystemThreadPool::StopThreads()
 {
-	if (mThreads.empty())
-		return;
+	// if (mThreads.empty())
+	// 	return;
 
-	// Signal threads that we want to stop and wake them up
-	mQuit = true;
-	mSemaphore.Release((uint)mThreads.size());
+	// // Signal threads that we want to stop and wake them up
+	// mQuit = true;
+	// mSemaphore.Release((uint)mThreads.size());
 
-	// Wait for all threads to finish
-	for (thread &t : mThreads)
-		if (t.joinable())
-			t.join();
+	// // Wait for all threads to finish
+	// for (thread &t : mThreads)
+	// 	if (t.joinable())
+	// 		t.join();
 
-	// Delete all threads
-	mThreads.clear();
+	// // Delete all threads
+	// mThreads.clear();
 
-	// Ensure that there are no lingering jobs in the queue
-	for (uint head = 0; head != mTail; ++head)
-	{
-		// Fetch job
-		Job *job_ptr = mQueue[head & (cQueueLength - 1)].exchange(nullptr);
-		if (job_ptr != nullptr)
-		{
-			// And execute it
-			job_ptr->Execute();
-			job_ptr->Release();
-		}
-	}
+	// // Ensure that there are no lingering jobs in the queue
+	// for (uint head = 0; head != mTail; ++head)
+	// {
+	// 	// Fetch job
+	// 	Job *job_ptr = mQueue[head & (cQueueLength - 1)].exchange(nullptr);
+	// 	if (job_ptr != nullptr)
+	// 	{
+	// 		// And execute it
+	// 		job_ptr->Execute();
+	// 		job_ptr->Release();
+	// 	}
+	// }
 
-	// Destroy heads and reset tail
-	Free(mHeads);
-	mHeads = nullptr;
-	mTail = 0;
+	// // Destroy heads and reset tail
+	// Free(mHeads);
+	// mHeads = nullptr;
+	// mTail = 0;
 }
 
 JobHandle JobSystemThreadPool::CreateJob(const char *inJobName, ColorArg inColor, const JobFunction &inJobFunction, uint32 inNumDependencies)
@@ -122,7 +122,7 @@ JobHandle JobSystemThreadPool::CreateJob(const char *inJobName, ColorArg inColor
 		if (index != AvailableJobs::cInvalidObjectIndex)
 			break;
 		JPH_ASSERT(false, "No jobs available!");
-		std::this_thread::sleep_for(std::chrono::microseconds(100));
+		//std::this_thread::sleep_for(std::chrono::microseconds(100));
 	}
 	Job *job = &mJobs.Get(index);
 
@@ -146,8 +146,8 @@ uint JobSystemThreadPool::GetHead() const
 {
 	// Find the minimal value across all threads
 	uint head = mTail;
-	for (size_t i = 0; i < mThreads.size(); ++i)
-		head = min(head, mHeads[i].load());
+	// for (size_t i = 0; i < mThreads.size(); ++i)
+	// 	head = min(head, mHeads[i].load());
 	return head;
 }
 
@@ -172,15 +172,15 @@ void JobSystemThreadPool::QueueJobInternal(Job *inJob)
 			old_value = mTail;
 
 			// Second check if there's space in the queue
-			if (old_value - head >= cQueueLength)
-			{
-				// Wake up all threads in order to ensure that they can clear any nullptrs they may not have processed yet
-				mSemaphore.Release((uint)mThreads.size());
+			// if (old_value - head >= cQueueLength)
+			// {
+			// 	// Wake up all threads in order to ensure that they can clear any nullptrs they may not have processed yet
+			// 	mSemaphore.Release((uint)mThreads.size());
 
-				// Sleep a little (we have to wait for other threads to update their head pointer in order for us to be able to continue)
-				std::this_thread::sleep_for(std::chrono::microseconds(100));
-				continue;
-			}
+			// 	// Sleep a little (we have to wait for other threads to update their head pointer in order for us to be able to continue)
+			// 	std::this_thread::sleep_for(std::chrono::microseconds(100));
+			// 	continue;
+			// }
 		}
 
 		// Write the job pointer if the slot is empty
@@ -202,14 +202,14 @@ void JobSystemThreadPool::QueueJob(Job *inJob)
 	JPH_PROFILE_FUNCTION();
 
 	// If we have no worker threads, we can't queue the job either. We assume in this case that the job will be added to a barrier and that the barrier will execute the job when it's Wait() function is called.
-	if (mThreads.empty())
-		return;
+	// if (mThreads.empty())
+	// 	return;
 
-	// Queue the job
-	QueueJobInternal(inJob);
+	// // Queue the job
+	// QueueJobInternal(inJob);
 
-	// Wake up thread
-	mSemaphore.Release();
+	// // Wake up thread
+	// mSemaphore.Release();
 }
 
 void JobSystemThreadPool::QueueJobs(Job **inJobs, uint inNumJobs)
@@ -219,15 +219,15 @@ void JobSystemThreadPool::QueueJobs(Job **inJobs, uint inNumJobs)
 	JPH_ASSERT(inNumJobs > 0);
 
 	// If we have no worker threads, we can't queue the job either. We assume in this case that the job will be added to a barrier and that the barrier will execute the job when it's Wait() function is called.
-	if (mThreads.empty())
-		return;
+	// if (mThreads.empty())
+	// 	return;
 
-	// Queue all jobs
-	for (Job **job = inJobs, **job_end = inJobs + inNumJobs; job < job_end; ++job)
-		QueueJobInternal(*job);
+	// // Queue all jobs
+	// for (Job **job = inJobs, **job_end = inJobs + inNumJobs; job < job_end; ++job)
+	// 	QueueJobInternal(*job);
 
-	// Wake up threads
-	mSemaphore.Release(min(inNumJobs, (uint)mThreads.size()));
+	// // Wake up threads
+	// mSemaphore.Release(min(inNumJobs, (uint)mThreads.size()));
 }
 
 #if defined(JPH_PLATFORM_WINDOWS) && !defined(JPH_COMPILER_MINGW) // MinGW doesn't support __try/__except
@@ -285,7 +285,7 @@ void JobSystemThreadPool::ThreadMain(int inThreadIndex)
 	while (!mQuit)
 	{
 		// Wait for jobs
-		mSemaphore.Acquire();
+		//mSemaphore.Acquire();
 
 		{
 			JPH_PROFILE("Executing Jobs");

@@ -104,7 +104,7 @@ void BodyManager::Init(uint inMaxBodies, uint inNumBodyMutexes, const BroadPhase
 	UniqueLock lock(mBodiesMutex JPH_IF_ENABLE_ASSERTS(, this, EPhysicsLockTypes::BodiesList));
 
 	// Num body mutexes must be a power of two and not bigger than our MutexMask
-	uint num_body_mutexes = Clamp<uint>(GetNextPowerOf2(inNumBodyMutexes == 0? 2 * thread::hardware_concurrency() : inNumBodyMutexes), 1, sizeof(MutexMask) * 8);
+	uint num_body_mutexes = Clamp<uint>(GetNextPowerOf2(inNumBodyMutexes == 0? 2 * 1 : inNumBodyMutexes), 1, sizeof(MutexMask) * 8);
 
 	// Allocate the body mutexes
 	mBodyMutexes.Init(num_body_mutexes);
@@ -1093,14 +1093,14 @@ void BodyManager::InvalidateContactCacheForBody(Body &ioBody)
 	// If this is the first time we flip the collision cache invalid flag, we need to add it to an internal list to ensure we reset the flag at the end of the physics update
 	if (ioBody.InvalidateContactCacheInternal())
 	{
-		lock_guard lock(mBodiesCacheInvalidMutex);
+		// lock_guard lock(mBodiesCacheInvalidMutex);
 		mBodiesCacheInvalid.push_back(ioBody.GetID());
 	}
 }
 
 void BodyManager::ValidateContactCacheForAllBodies()
 {
-	lock_guard lock(mBodiesCacheInvalidMutex);
+	// lock_guard lock(mBodiesCacheInvalidMutex);
 
 	for (const BodyID &b : mBodiesCacheInvalid)
 	{

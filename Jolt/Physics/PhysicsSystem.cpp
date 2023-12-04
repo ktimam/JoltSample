@@ -103,7 +103,7 @@ void PhysicsSystem::OptimizeBroadPhase()
 
 void PhysicsSystem::AddStepListener(PhysicsStepListener *inListener)
 {
-	lock_guard lock(mStepListenersMutex);
+	// lock_guard lock(mStepListenersMutex);
 
 	JPH_ASSERT(find(mStepListeners.begin(), mStepListeners.end(), inListener) == mStepListeners.end());
 	mStepListeners.push_back(inListener);
@@ -111,7 +111,7 @@ void PhysicsSystem::AddStepListener(PhysicsStepListener *inListener)
 
 void PhysicsSystem::RemoveStepListener(PhysicsStepListener *inListener)
 {
-	lock_guard lock(mStepListenersMutex);
+	// lock_guard lock(mStepListenersMutex);
 
 	StepListeners::iterator i = find(mStepListeners.begin(), mStepListeners.end(), inListener);
 	JPH_ASSERT(i != mStepListeners.end());
@@ -1389,7 +1389,7 @@ void PhysicsSystem::JobSolveVelocityConstraints(PhysicsUpdateContext *ioContext,
 		}
 
 		// If we didn't find any work, give up a time slice
-		std::this_thread::yield();
+		// std::this_thread::yield();
 	}
 	while (check_islands || check_split_islands);
 }
@@ -2335,7 +2335,7 @@ void PhysicsSystem::JobSolvePositionConstraints(PhysicsUpdateContext *ioContext,
 		}
 
 		// If we didn't find any work, give up a time slice
-		std::this_thread::yield();
+		// std::this_thread::yield();
 	}
 	while (check_islands || check_split_islands);
 }
@@ -2473,8 +2473,8 @@ void PhysicsSystem::JobSoftBodySimulate(PhysicsUpdateContext *ioContext, uint in
 		}
 
 		// If we didn't perform any work, yield the thread so that something else can run
-		if (!(status & (uint)SoftBodyMotionProperties::EStatus::DidWork))
-			std::this_thread::yield();
+		// if (!(status & (uint)SoftBodyMotionProperties::EStatus::DidWork))
+			// std::this_thread::yield();
 	}
 	while (status != (uint)SoftBodyMotionProperties::EStatus::Done);
 }

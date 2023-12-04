@@ -12,6 +12,7 @@ cpp_paths = [
 cpp_include_dirs = ["Jolt/"]
 cpp_compile_flags = [
     "-D JPH_PLATFORM_WASM",
+    "-D JPH_PLATFORM_SINGLE_THREAD",
 ]
 cpp_link_flags = []
 c_paths = []

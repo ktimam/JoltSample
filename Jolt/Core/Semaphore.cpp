@@ -48,7 +48,7 @@ void Semaphore::Release(uint inNumber)
 		::ReleaseSemaphore(mSemaphore, num_to_release, nullptr);
 	}
 #else
-	std::lock_guard lock(mLock);
+	// std::lock_guard lock(mLock);
 	mCount += (int)inNumber;
 	if (inNumber > 1)
 		mWaitVariable.notify_all();

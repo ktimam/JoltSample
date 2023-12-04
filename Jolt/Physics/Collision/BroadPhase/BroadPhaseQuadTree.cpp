@@ -404,7 +404,7 @@ void BroadPhaseQuadTree::CastRay(const RayCast &inRay, RayCastBodyCollector &ioC
 	JPH_ASSERT(mMaxBodies == mBodyManager->GetMaxBodies());
 
 	// Prevent this from running in parallel with node deletion in FrameSync(), see notes there
-	shared_lock lock(mQueryLocks[mQueryLockIdx]);
+	// shared_lock lock(mQueryLocks[mQueryLockIdx]);
 
 	// Loop over all layers and test the ones that could hit
 	for (BroadPhaseLayer::Type l = 0; l < mNumLayers; ++l)
@@ -427,7 +427,7 @@ void BroadPhaseQuadTree::CollideAABox(const AABox &inBox, CollideShapeBodyCollec
 	JPH_ASSERT(mMaxBodies == mBodyManager->GetMaxBodies());
 
 	// Prevent this from running in parallel with node deletion in FrameSync(), see notes there
-	shared_lock lock(mQueryLocks[mQueryLockIdx]);
+	// shared_lock lock(mQueryLocks[mQueryLockIdx]);
 
 	// Loop over all layers and test the ones that could hit
 	for (BroadPhaseLayer::Type l = 0; l < mNumLayers; ++l)
@@ -450,7 +450,7 @@ void BroadPhaseQuadTree::CollideSphere(Vec3Arg inCenter, float inRadius, Collide
 	JPH_ASSERT(mMaxBodies == mBodyManager->GetMaxBodies());
 
 	// Prevent this from running in parallel with node deletion in FrameSync(), see notes there
-	shared_lock lock(mQueryLocks[mQueryLockIdx]);
+	// shared_lock lock(mQueryLocks[mQueryLockIdx]);
 
 	// Loop over all layers and test the ones that could hit
 	for (BroadPhaseLayer::Type l = 0; l < mNumLayers; ++l)
@@ -473,7 +473,7 @@ void BroadPhaseQuadTree::CollidePoint(Vec3Arg inPoint, CollideShapeBodyCollector
 	JPH_ASSERT(mMaxBodies == mBodyManager->GetMaxBodies());
 
 	// Prevent this from running in parallel with node deletion in FrameSync(), see notes there
-	shared_lock lock(mQueryLocks[mQueryLockIdx]);
+	// shared_lock lock(mQueryLocks[mQueryLockIdx]);
 
 	// Loop over all layers and test the ones that could hit
 	for (BroadPhaseLayer::Type l = 0; l < mNumLayers; ++l)
@@ -496,7 +496,7 @@ void BroadPhaseQuadTree::CollideOrientedBox(const OrientedBox &inBox, CollideSha
 	JPH_ASSERT(mMaxBodies == mBodyManager->GetMaxBodies());
 
 	// Prevent this from running in parallel with node deletion in FrameSync(), see notes there
-	shared_lock lock(mQueryLocks[mQueryLockIdx]);
+	// shared_lock lock(mQueryLocks[mQueryLockIdx]);
 
 	// Loop over all layers and test the ones that could hit
 	for (BroadPhaseLayer::Type l = 0; l < mNumLayers; ++l)
@@ -535,7 +535,7 @@ void BroadPhaseQuadTree::CastAABoxNoLock(const AABoxCast &inBox, CastShapeBodyCo
 void BroadPhaseQuadTree::CastAABox(const AABoxCast &inBox, CastShapeBodyCollector &ioCollector, const BroadPhaseLayerFilter &inBroadPhaseLayerFilter, const ObjectLayerFilter &inObjectLayerFilter) const
 {
 	// Prevent this from running in parallel with node deletion in FrameSync(), see notes there
-	shared_lock lock(mQueryLocks[mQueryLockIdx]);
+	// shared_lock lock(mQueryLocks[mQueryLockIdx]);
 
 	CastAABoxNoLock(inBox, ioCollector, inBroadPhaseLayerFilter, inObjectLayerFilter);
 }

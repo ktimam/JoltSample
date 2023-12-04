@@ -6,16 +6,16 @@
 
 #include <Jolt/Core/JobSystemWithBarrier.h>
 #include <Jolt/Core/FixedSizeFreeList.h>
-#include <Jolt/Core/Semaphore.h>
+//#include <Jolt/Core/Semaphore.h>
 
 JPH_SUPPRESS_WARNINGS_STD_BEGIN
-#include <thread>
+//#include <thread>
 JPH_SUPPRESS_WARNINGS_STD_END
 
 JPH_NAMESPACE_BEGIN
 
 // Things we're using from STL
-using std::thread;
+//using std::thread;
 
 /// Implementation of a JobSystem using a thread pool
 ///
@@ -40,7 +40,7 @@ public:
 	void					Init(uint inMaxJobs, uint inMaxBarriers, int inNumThreads = -1);
 
 	// See JobSystem
-	virtual int				GetMaxConcurrency() const override				{ return int(mThreads.size()) + 1; }
+	virtual int				GetMaxConcurrency() const override				{ return /* int(mThreads.size()) + */ 1; }
 	virtual JobHandle		CreateJob(const char *inName, ColorArg inColor, const JobFunction &inJobFunction, uint32 inNumDependencies = 0) override;
 
 	/// Change the max concurrency after initialization
@@ -71,7 +71,7 @@ private:
 	AvailableJobs			mJobs;
 
 	/// Threads running jobs
-	Array<thread>			mThreads;
+	//Array<thread>			mThreads;
 
 	// The job queue
 	static constexpr uint32 cQueueLength = 1024;
@@ -83,7 +83,7 @@ private:
 	alignas(JPH_CACHE_LINE_SIZE) atomic<uint> mTail = 0;					///< Tail (write end) of the queue
 
 	// Semaphore used to signal worker threads that there is new work
-	Semaphore				mSemaphore;
+	//Semaphore				mSemaphore;
 
 	/// Boolean to indicate that we want to stop the job system
 	atomic<bool>			mQuit = false;

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Jolt/Core/JobSystem.h>
-#include <Jolt/Core/Semaphore.h>
+//#include <Jolt/Core/Semaphore.h>
 
 JPH_NAMESPACE_BEGIN
 
@@ -74,7 +74,7 @@ private:
 		alignas(JPH_CACHE_LINE_SIZE) atomic<uint> mJobReadIndex { 0 };		///< First job that could be valid (modulo cMaxJobs), can be nullptr if other thread is still working on adding the job
 		alignas(JPH_CACHE_LINE_SIZE) atomic<uint> mJobWriteIndex { 0 };		///< First job that can be written (modulo cMaxJobs)
 		atomic<int>			mNumToAcquire { 0 };							///< Number of times the semaphore has been released, the barrier should acquire the semaphore this many times (written at the same time as mJobWriteIndex so ok to put in same cache line)
-		Semaphore			mSemaphore;										///< Semaphore used by finishing jobs to signal the barrier that they're done
+		//Semaphore			mSemaphore;										///< Semaphore used by finishing jobs to signal the barrier that they're done
 	};
 
 	/// Array of barriers (we keep them constructed all the time since constructing a semaphore/mutex is not cheap)
